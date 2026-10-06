@@ -16,3 +16,7 @@
   footer{padding-top:22px;padding-bottom:22px}
 }
 .cac,.dodin{display:inline-block;margin:5px 0 0 7px;padding:2px 6px;border:1px solid #8c7130;border-radius:999px;color:var(--gold2);font:700 9px/1.2 ui-sans-serif,system-ui,sans-serif;letter-spacing:.08em;font-style:normal;vertical-align:2px}.dodin{border-color:#536c87;color:#a9bdd2}.link-card>span{display:block}
+/* Access badges live in the tile corner, clear of the title. */
+.link-card{position:relative}
+.link-card>.cac,.link-card>.dodin{position:absolute;top:9px;right:10px;margin:0;z-index:1}
+.link-card:has(>.cac)>b,.link-card:has(>.dodin)>b{margin-right:48px}
