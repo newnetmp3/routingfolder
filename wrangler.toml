@@ -1,6 +1,11 @@
 name = "routingfolder"
 compatibility_date = "2026-10-06"
 
+routes = [
+  { pattern = "routingfolder.com", custom_domain = true },
+  { pattern = "www.routingfolder.com", custom_domain = true }
+]
+
 [assets]
 directory = "./public"
 not_found_handling = "single-page-application"
