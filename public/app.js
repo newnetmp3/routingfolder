@@ -1,0 +1,25 @@
+const links=[
+["MyNavy Portal","Official Navy personnel portal","Navy CAC","https://my.navy.mil/"],
+["MyPay","DFAS pay and LES access","LES pay DFAS CAC","https://mypay.dfas.mil/"],
+["Navy Quick Links","Official MyNavy quick-links directory","Navy links official","https://my.navy.mil/quick-links.html"],
+["NSIPS","Navy Standard Integrated Personnel System","Navy personnel NSIPS CAC","https://nsips.navy.mil/"],
+["BOL","BUPERS Online","Navy BOL BUPERS CAC","https://www.bol.navy.mil/"],
+["Navy eLearning","Online Navy training","Navy training NKO learning","https://learning.nel.navy.mil/"],
+["DoD SAFE","Secure file exchange","DoD files CAC transfer","https://safe.apps.mil/"],
+["MHS GENESIS","Military health patient portal","medical health DoD","https://patientportal.mhsgenesis.health.mil/"],
+["Navy COOL","Credentials and certifications","Navy credentials education","https://www.cool.osd.mil/usn/"],
+["DoD Cyber Exchange","Cybersecurity resources","DoD cyber CAC certificates","https://public.cyber.mil/"],
+["GitHub","Code repositories and projects","IT development code","https://github.com/"],
+["Cloudflare Dashboard","DNS, Workers and web services","IT network DNS hosting","https://dash.cloudflare.com/"]
+];
+const grid=document.querySelector("#linkGrid"),search=document.querySelector("#search"),results=document.querySelector("#results");
+function drawLinks(items=links){grid.innerHTML=items.map(x=>'<a class="link-card" target="_blank" rel="noopener" href="'+x[3]+'"><b>↗</b><strong>'+x[0]+'</strong><span>'+x[1]+'</span></a>').join("")}drawLinks();
+function doSearch(q){q=q.trim().toLowerCase();if(!q){results.classList.add("hidden");return}let found=links.filter(x=>x.slice(0,3).join(" ").toLowerCase().includes(q));let tools=[["subnet","IPv4 / CIDR Calculator","#tools"],["cidr","IPv4 / CIDR Calculator","#tools"],["hash","SHA-256 Hash","#tools"],["sha","SHA-256 Hash","#tools"],["base64","Base64 Encoder / Decoder","#tools"],["json","JSON Formatter","#tools"],["utc","Zulu / Local Time","#tools"],["zulu","Zulu / Local Time","#tools"],["convert","Unit Converter","#tools"]].filter(x=>x[0].includes(q)||x[1].toLowerCase().includes(q));results.innerHTML=found.map(x=>'<a target="_blank" rel="noopener" href="'+x[3]+'"><span>'+x[0]+'</span><small>'+x[1]+' ↗</small></a>').join("")+tools.map(x=>'<a href="'+x[2]+'" onclick="hideResults()"><span>'+x[1]+'</span><small>Local tool →</small></a>').join("");results.classList.toggle("hidden",!found.length&&!tools.length)}
+search.addEventListener("input",e=>doSearch(e.target.value));document.addEventListener("keydown",e=>{if(e.key==="/"&&document.activeElement.tagName!=="INPUT"&&document.activeElement.tagName!=="TEXTAREA"){e.preventDefault();search.focus()}});document.querySelectorAll("[data-query]").forEach(b=>b.onclick=()=>{search.value=b.dataset.query;doSearch(search.value);search.focus()});function hideResults(){results.classList.add("hidden")}
+function ipNum(s){let p=s.split(".").map(Number);if(p.length!==4||p.some(n=>n<0||n>255||!Number.isInteger(n)))throw 0;return (((p[0]<<24)>>>0)+(p[1]<<16)+(p[2]<<8)+p[3])>>>0}function numIp(n){return [n>>>24,(n>>>16)&255,(n>>>8)&255,n&255].join(".")}function calcCIDR(){try{let [ip,p]=cidr.value.trim().split("/"),bits=Number(p);if(!Number.isInteger(bits)||bits<0||bits>32)throw 0;let n=ipNum(ip),mask=bits===0?0:(0xffffffff<<(32-bits))>>>0,net=(n&mask)>>>0,bcast=(net+(2**(32-bits)-1))>>>0,hosts=bits>=31?2**(32-bits):Math.max(0,2**(32-bits)-2);cidrOut.textContent="Network:   "+numIp(net)+"/"+bits+"\nBroadcast: "+numIp(bcast)+"\nUsable:    "+(bits<31?numIp(net+1)+" – "+numIp(bcast-1):"Point-to-point / host route")+"\nHosts:     "+hosts}catch{cidrOut.textContent="Invalid IPv4/CIDR."}}
+async function makeHash(){let data=new TextEncoder().encode(hashIn.value),h=await crypto.subtle.digest("SHA-256",data);hashOut.textContent=[...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("")}
+function b64(mode){try{b64Out.textContent=mode==="encode"?btoa(unescape(encodeURIComponent(b64In.value))):decodeURIComponent(escape(atob(b64In.value.trim())))}catch{b64Out.textContent="Invalid Base64 input."}}
+function formatJSON(){try{jsonOut.textContent=JSON.stringify(JSON.parse(jsonIn.value),null,2)}catch(e){jsonOut.textContent="Invalid JSON: "+e.message}}
+function tick(){let d=new Date();zulu.textContent=d.toISOString().slice(11,19)+"Z";local.textContent=d.toLocaleTimeString()}tick();setInterval(tick,1000);
+function convertUnit(){let v=Number(unitVal.value),t=unitType.value,m={["mi-km"]:[1.609344,"km"],["km-mi"]:[.621371192,"mi"],["in-mm"]:[25.4,"mm"],["mm-in"]:[1/25.4,"in"],["ft-m"]:[.3048,"m"],["m-ft"]:[3.280839895,"ft"]};unitOut.textContent=(v*m[t][0]).toLocaleString(undefined,{maximumFractionDigits:6})+" "+m[t][1]}
+document.querySelector("#year").textContent="© "+new Date().getFullYear();
